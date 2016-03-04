@@ -1,0 +1,94 @@
+# Path to your oh-my-zsh configuration.
+ZSH=/home/<%= node[:user] -%>/.oh-my-zsh
+
+# Set name of the theme to load.
+# Look in ~/.oh-my-zsh/themes/
+# Optionally, if you set this to "random", it'll load a random theme each
+# time that oh-my-zsh is loaded.
+ZSH_THEME="ares"
+
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# enable git pointers containing ^ (e.g. HEAD^^^)
+alias git="noglob git"
+alias scratchbuild_nscl='koji -c ~/.koji/katello-config build --scratch --nowait foreman-nightly-nonscl-rhel6 $(tito build --offline --test --srpm --dist=.el6 | tail -n1 | sed "s/^Wrote: //g")'
+alias scratchbuild_scl='koji -c ~/.koji/katello-config build --scratch --nowait foreman-nightly-rhel6 $(tito build --offline --test --srpm --dist=.el6 | tail -n1 | sed "s/^Wrote: //g")'
+
+# Set to this to use case-sensitive completion
+# CASE_SENSITIVE="true"
+
+# Comment this out to disable weekly auto-update checks
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment following line if you want to disable colors in ls
+# DISABLE_LS_COLORS="true"
+
+# Uncomment following line if you want to disable autosetting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment following line if you want red dots to be displayed while waiting for completion
+# COMPLETION_WAITING_DOTS="true"
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+plugins=(git git-extras bundler gem rake rails3 cap <%= %w(centos redhat fedora).include?(node[:platform]) ? 'yum' : 'debian' %> history-substring-search rails ruby source_code tmunix knife)
+
+source $ZSH/oh-my-zsh.sh
+
+# Customize to your needs...
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# force ignoredups and ignorespace
+export HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+setopt histappend
+
+### ares
+# set default editor to vim
+export EDITOR=vim
+
+# don't put duplicate lines in the history. See bash(1) for more options
+export HISTSIZE=10000
+
+<% if !node[:rbenv].nil? && node[:rvm].nil? %>
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+<% end %>
+
+<% if !node[:rvm].nil? %>
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+<% end %>
+
+### ares
+# add extra user bin directory
+export PATH="$HOME/.bin:$PATH"
+
+# turn of pc speaker for god sake
+xset -b 2> /dev/null
+
+<% case node[:platform] %>
+<% when "centos","redhat","fedora" %>
+figlet -f standard <%= node[:hostname] %>
+<% else %>
+toilet --font standard --metal <%= node[:hostname] %>
+<% end %>
+
+# turn off autocorrection
+unsetopt correct_all
+# ares - allow # comments in CLI
+setopt interactivecomments
+
+# dch configuration for debian packaging
+export DEBEMAIL=<%= node[:git][:email] %>
+export DEBFULLNAME="<%= node[:git][:name] %>"
+

@@ -1,0 +1,25 @@
+# Grab the current version of ruby in use (via RVM): [ruby-1.8.7]
+#if which rvm-prompt &> /dev/null; then
+#  CURRENT_RUBY="%{$fg[white]%}[%{$fg[magenta]%}\$(~/.rvm/bin/rvm-prompt i v)%{$fg[white]%}]%{$reset_color%}"
+#else
+#  if which rbenv &> /dev/null; then
+#    CURRENT_RUBY="%{$fg[white]%}[%{$fg[magenta]%}\$(rbenv version | sed -e 's/ (set.*$//')%{$fg[white]%}]%{$reset_color%}"
+#  fi
+#fi
+# ares - force RVM, which detection does not work
+# CURRENT_RUBY="%{$fg[white]%}[%{$fg[yellow]%}$(~/.rvm/bin/rvm-prompt i v)%{$fg[white]%}]%{$reset_color%}"
+
+if [ $UID -eq 0 ]; then CARETCOLOR="red"; SEPARATOR="#"; else CARETCOLOR="white"; SEPARATOR="$"; fi
+
+# when ctrl+c RPS always deletes spacebar at end of prompt, so we end up not using it
+#local return_code="%(?..%{$fg[red]%}%? ☹ %{$reset_color%})"
+#RPS1="${return_code}"
+
+<% machine_color = '${fg_bold[' + node[:zsh][:prompt_machine_color] + ']}' %>
+
+PROMPT='%{${fg_bold[green]}%}%n@<%= machine_color -%>%m%{${fg_bold[blue]}%}:%{$reset_color%}[%{${fg_bold[blue]}%}%~%{$reset_color%}]$(git_prompt_info)$CURRENT_RUBY%{${fg_bold[$CARETCOLOR]}%}%{$SEPARATOR%}%{${reset_color}%} '
+
+ZSH_THEME_GIT_PROMPT_PREFIX="[%{$fg_bold[yellow]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}]"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}✓"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}✗"

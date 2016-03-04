@@ -1,0 +1,9 @@
+n() { vim ~/Poznamky/$1; }
+
+_n() { _files -W ~/Poznamky; }
+compdef _n n
+
+cn() { cat ~/Poznamky/$1; }
+compdef _n cn
+
+gn() { ack $1 ~/Poznamky/; }
